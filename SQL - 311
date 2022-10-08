@@ -1,0 +1,85 @@
+-- group complaints 
+
+SELECT
+  complaint_description,
+  COUNT(complaint_description) AS total_complaint
+FROM
+  `bigquery-public-data.austin_311.311_service_requests`
+GROUP BY
+  complaint_description 
+  
+  -- top 10 complaints
+
+SELECT
+  complaint_description,
+  COUNT(complaint_description) AS total_complaint
+FROM
+  `bigquery-public-data.austin_311.311_service_requests`
+GROUP BY
+  complaint_description
+ORDER BY
+  total_complaint DESC
+  LIMIT 10 
+  
+-- Most used SOURCE
+
+SELECT
+  SOURCE,
+  COUNT(SOURCE) AS total_source
+FROM
+  `bigquery-public-data.austin_311.311_service_requests`
+GROUP BY SOURCE
+ORDER BY
+  total_source DESC
+
+  -- view avg response time
+
+SELECT
+  complaint_description,
+  COUNT(complaint_description) AS Complaint,
+  round(AVG(DATETIME_DIFF(close_date, created_date, minute)),1) AS avg_response_time
+FROM
+  `bigquery-public-data.austin_311.311_service_requests`
+Where 
+  status like "Closed"
+GROUP BY
+  complaint_description
+ORDER BY
+  avg_response_time desc 
+
+-- check compost times
+
+select
+ complaint_description,
+ created_date, 
+ close_date, 
+from
+  `bigquery-public-data.austin_311.311_service_requests`
+  where 
+  complaint_description like "ARR - Compost"
+  and
+  status like "Closed";
+
+  -- zip with longest wait time 
+
+  SELECT
+  incident_zip,
+  count(incident_zip) as total_zip_incidents,
+  round(AVG(DATETIME_DIFF(close_date, created_date, minute)),1) AS avg_response_time
+FROM
+  `bigquery-public-data.austin_311.311_service_requests`
+Where 
+  status like "Closed"
+GROUP BY
+  incident_zip
+ORDER BY
+  avg_response_time desc 
+
+-- Zipcodes with the most calls
+select
+  incident_zip,
+  count(incident_zip) as total_zip_incidents
+from 
+   `bigquery-public-data.austin_311.311_service_requests`
+  group by incident_zip
+  order by total_zip_incidents desc
